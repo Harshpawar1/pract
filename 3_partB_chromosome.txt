@@ -1,0 +1,48 @@
+chromosome
+
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class Main {
+
+    private static void printChromosome(List<List<Integer>> chromosome) {
+        for (List<Integer> row : chromosome) {
+            for (int value : row) {
+                System.out.print(value + " ");
+            }
+            System.out.println();
+        }
+    }
+
+    private static void mutate(List<List<Integer>> chromosome, double mutationRate) {
+        int[] mutationSequence = {1, 0, 1, 1, 0, 0, 1, 1}; // A simple deterministic sequence
+
+        int mutationIndex = 0;
+        for (List<Integer> row : chromosome) {
+            for (int j = 0; j < row.size(); ++j) {
+                if (mutationIndex < mutationSequence.length && mutationSequence[mutationIndex] == 1) {
+                    // Mutate the value
+                    row.set(j, (row.get(j) + 1) % 50);
+                }
+                mutationIndex = (mutationIndex + 1) % mutationSequence.length;
+            }
+        }
+    }
+
+    public static void main(String[] args) {
+        List<List<Integer>> chromosome = new ArrayList<>();
+        chromosome.add(new ArrayList<>(List.of(0, 10, 15, 20)));
+        chromosome.add(new ArrayList<>(List.of(5, 0, 9, 10)));
+        chromosome.add(new ArrayList<>(List.of(6, 13, 0, 12)));
+        chromosome.add(new ArrayList<>(List.of(8, 8, 9, 0)));
+
+        System.out.println("Original Chromosome:");
+        printChromosome(chromosome);
+
+        mutate(chromosome, 0.1);
+
+        System.out.println("Mutated Chromosome:");
+        printChromosome(chromosome);
+    }
+}

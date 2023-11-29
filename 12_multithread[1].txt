@@ -1,0 +1,127 @@
+import java.util.Random;
+
+public class Main {
+    static final int MAX = 4;
+    static final int MAX_THREAD = 4;
+    static int[][] matA = new int[MAX][MAX];
+    static int[][] matB = new int[MAX][MAX];
+    static int[][] matC = new int[MAX][MAX];
+    static int step_i = 0;
+
+    static class Worker implements Runnable {
+        int i;
+
+        Worker(int i) {
+            this.i = i;
+        }
+
+        @Override
+        public void run() {
+            for (int j = 0; j < MAX; j++) {
+                for (int k = 0; k < MAX; k++) {
+                    matC[i][j] += matA[i][k] * matB[k][j];
+                }
+            }
+        }
+    }
+
+    public static void main(String[] args) {
+        Random rand = new Random();
+
+        // Generating random values in matA and matB
+        for (int i = 0; i < MAX; i++) {
+            for (int j = 0; j < MAX; j++) {
+                matA[i][j] = rand.nextInt(10);
+                matB[i][j] = rand.nextInt(10);
+            }
+        }
+
+        // Displaying matA
+        System.out.println("Matrix A");
+        for (int i = 0; i < MAX; i++) {
+            for (int j = 0; j < MAX; j++) {
+                System.out.print(matA[i][j] + " ");
+            }
+            System.out.println();
+        }
+
+        // Displaying matB
+        System.out.println("Matrix B");
+        for (int i = 0; i < MAX; i++) {
+            for (int j = 0; j < MAX; j++) {
+                System.out.print(matB[i][j] + " ");
+            }
+            System.out.println();
+        }
+
+        // Time measurement for multithreaded multiplication
+        long startTimeMultithreaded = System.currentTimeMillis();
+
+        // declaring four threads
+        Thread[] threads = new Thread[MAX_THREAD];
+
+        // Creating four threads, each evaluating its own part
+        for (int i = 0; i < MAX_THREAD; i++) {
+            threads[i] = new Thread(new Worker(step_i++));
+            threads[i].start();
+        }
+
+        // joining and waiting for all threads to complete
+        for (int i = 0; i < MAX_THREAD; i++) {
+            try {
+                threads[i].join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+
+        long endTimeMultithreaded = System.currentTimeMillis();
+        long multithreadedTime = endTimeMultithreaded - startTimeMultithreaded;
+
+        // Time measurement for sequential multiplication
+        long startTimeSequential = System.currentTimeMillis();
+        int[][] resultSequential = multiplyMatricesSequential(matA, matB);
+        long endTimeSequential = System.currentTimeMillis();
+        long sequentialTime = endTimeSequential - startTimeSequential;
+
+        // Displaying the result matrix for multithreaded multiplication
+        System.out.println("Multiplication of A and B (Multithreaded)");
+        for (int i = 0; i < MAX; i++) {
+            for (int j = 0; j < MAX; j++) {
+                System.out.print(matC[i][j] + " ");
+            }
+            System.out.println();
+        }
+
+        // Displaying the result matrix for sequential multiplication
+        System.out.println("Multiplication of A and B (Sequential)");
+        for (int i = 0; i < MAX; i++) {
+            for (int j = 0; j < MAX; j++) {
+                System.out.print(resultSequential[i][j] + " ");
+            }
+            System.out.println();
+        }
+
+        // Print the time taken for both approaches
+        System.out.println("Multithreaded Time: " + multithreadedTime + " ms");
+        System.out.println("Sequential Time: " + sequentialTime + " ms");
+    }
+
+    private static int[][] multiplyMatricesSequential(int[][] matrixA, int[][] matrixB) {
+        int rowsA = matrixA.length;
+        int colsA = matrixA[0].length;
+        int colsB = matrixB[0].length;
+
+        int[][] result = new int[rowsA][colsB];
+
+        for (int i = 0; i < rowsA; i++) {
+            for (int j = 0; j < colsB; j++) {
+                for (int k = 0; k < colsA; k++) {
+                    result[i][j] += matrixA[i][k] * matrixB[k][j];
+                }
+            }
+        }
+
+        return result;
+    }
+}

@@ -1,0 +1,80 @@
+dining philosopger
+
+
+
+
+
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
+class Philosopher extends Thread {
+    private int index;
+    private Lock leftChopstick;
+    private Lock rightChopstick;
+
+    public Philosopher(int index, Lock leftChopstick, Lock rightChopstick) {
+        this.index = index;
+        this.leftChopstick = leftChopstick;
+        this.rightChopstick = rightChopstick;
+    }
+
+    public void run() {
+        for (int i = 0; i < 3; i++) {  // Simulate three rounds of thinking/eating
+            think();
+            eat();
+        }
+    }
+
+    private void think() {
+        System.out.println("Philosopher " + index + " is thinking.");
+        try {
+            Thread.sleep((long) (Math.random() * 1000));
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void eat() {
+        System.out.println("Philosopher " + index + " is hungry.");
+        leftChopstick.lock();
+        rightChopstick.lock();
+        System.out.println("Philosopher " + index + " is eating.");
+        try {
+            Thread.sleep((long) (Math.random() * 1000));
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } finally {
+            rightChopstick.unlock();
+            leftChopstick.unlock();
+        }
+        System.out.println("Philosopher " + index + " finished eating.");
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        int numPhilosophers = 5;
+        Lock[] chopsticks = new ReentrantLock[numPhilosophers];
+
+        for (int i = 0; i < numPhilosophers; i++) {
+            chopsticks[i] = new ReentrantLock();
+        }
+
+        Philosopher[] philosophers = new Philosopher[numPhilosophers];
+        for (int i = 0; i < numPhilosophers; i++) {
+            philosophers[i] = new Philosopher(i, chopsticks[i], chopsticks[(i + 1) % numPhilosophers]);
+        }
+
+        for (Philosopher philosopher : philosophers) {
+            philosopher.start();
+        }
+
+        for (Philosopher philosopher : philosophers) {
+            try {
+                philosopher.join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+}

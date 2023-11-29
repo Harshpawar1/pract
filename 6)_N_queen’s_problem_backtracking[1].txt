@@ -1,0 +1,68 @@
+6) Implement N queen’s problem using Backtracking. Compare the time required for 4,5,6,7, and 8 Queens.
+
+
+
+import java.util.Scanner;
+
+public class Main {
+    private int boardSize;
+    private int[] queensPosition;
+    
+    public Main(int boardSize) {
+        this.boardSize = boardSize;
+        this.queensPosition = new int[boardSize];
+    }
+    
+    
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        System.out.print("Enter the board size (usually 8): ");
+        int boardSize = scanner.nextInt();
+        Main eightQueens = new Main(boardSize);
+        long startTime = System.nanoTime();
+        eightQueens.solveQueensProblem(0);
+        long endTime = System.nanoTime();
+        long executionTime = endTime - startTime;
+        // Print time complexity
+        System.out.println("Time Complexity: " + executionTime + " nanoseconds");
+    }
+    
+    private void solveQueensProblem(int row) {
+        if (row == boardSize) {
+            printQueens();
+        } 
+        else {
+            for (int col = 0; col < boardSize; col++) {
+                if (isValidPlacement(row, col)) {
+                    queensPosition[row] = col;
+                    solveQueensProblem(row + 1);
+                }
+            }
+        }
+    }
+    
+    private boolean isValidPlacement(int row, int col) {
+        for (int i = 0; i < row; i++) {
+            if (queensPosition[i] == col || Math.abs(queensPosition[i] - col) == Math.abs(i - row)) {
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    private void printQueens() {
+        System.out.println("Solution found:");
+        for (int i = 0; i < boardSize; i++) {
+            for (int j = 0; j < boardSize; j++) {
+                if (queensPosition[i] == j) {
+                    System.out.print("Q ");
+                } 
+                else {
+                    System.out.print("- ");
+                }
+            }
+            System.out.println();
+        }
+        System.out.println();
+    }
+}

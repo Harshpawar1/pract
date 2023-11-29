@@ -1,0 +1,602 @@
+QUESTION 1:
+
+import java.util.*;
+
+public class QuickSort{
+    static void swap(int[] arr, int i, int j){
+        int temp = arr[i];
+        arr[i] = arr[j];
+        arr[j] = temp;
+    }    
+    
+    static int partition(int[] arr, int low, int high){
+        int pivot = arr[high];
+        int i = low-1;
+        for (int j = low; j<= high; j++){
+            if(arr[j] < pivot){
+                i++;
+                swap(arr, i, j);
+            }
+        }
+        swap(arr, i+1, high);
+        return (i+1);
+    }
+    
+    static void quickSort(int[] arr, int low, int high){
+        if(low < high){
+            int pi = partition(arr, low, high);
+            quickSort(arr, low, pi-1);
+            quickSort(arr, pi+1, high);
+        }
+    }
+    
+    public static void main(String[] args){
+        int[] arr = {1, 2,5, 6,4, 3, 6};
+        int n = arr.length;
+        long startTime = System.currentTimeMillis();
+        quickSort(arr, 0, n-1);
+        long endTime = System.currentTimeMillis();
+        System.out.println(startTime+" "+endTime);
+        System.out.println("Time required: "+ (endTime - startTime));
+        for (int num: arr){
+            System.out.println(num+" ");
+        }
+        arr = new int[5000];
+        Random random = new Random();
+        for (int i = 0; i < 5000; i++){
+            arr[i] = random.nextInt(10000);
+        }
+        startTime = System.currentTimeMillis();
+        quickSort(arr, 0, 4999);
+        endTime = System.currentTimeMillis();
+        System.out.println(startTime+" "+endTime);
+        System.out.println("Time required: "+ (endTime - startTime));
+    }
+}
+
+import java.util.*;
+
+public class MergeSort{
+    static void merge(int[] arr, int l, int m, int r){
+        int n1 = m-l+1;
+        int n2 = r-m;
+        
+        int[] L = new int[n1];
+        int[] R = new int[n2];
+        
+        for(int i =0; i < n1; i++){
+            L[i] = arr[l+i];
+        }
+        for (int j = 0; j<n2; j++){
+            R[j] = arr[m+1+j];
+        }
+        
+        int i = 0, j = 0, k = l;
+        while (i < n1 && j <n2){
+            if(L[i] <= R[j]){
+                arr[k] = L[i];
+                i++;
+                k++;
+            }
+            else{
+                arr[k] = R[j];
+                j++;
+                k++;
+            }
+        }
+        
+        while(i <n1){
+            arr[k] = L[i];
+            i++;
+            k++;
+        }
+        
+        while(j < n2){
+            arr[k] = R[j];
+            j++;
+            k++;
+        }
+    }
+    
+    static void sort(int[] arr, int l, int r){
+        if(l < r){
+            int m = l+(r-l)/2;
+            sort(arr, l, m);
+            sort(arr, m+1, r);
+            merge(arr, l, m, r);
+        }
+    }
+    
+    public static void main(String[] args){
+        int[] arr = {1, 2,5, 6,4, 3, 6};
+        int n = arr.length;
+        long startTime = System.currentTimeMillis();
+        sort(arr, 0, n-1);
+        long endTime = System.currentTimeMillis();
+        System.out.println(startTime+" "+endTime);
+        System.out.println("Time required: "+ (endTime - startTime));
+        for (int num: arr){
+            System.out.println(num+" ");
+        }
+        arr = new int[5000];
+        Random random = new Random();
+        for (int i = 0; i < 5000; i++){
+            arr[i] = random.nextInt(10000);
+        }
+        startTime = System.currentTimeMillis();
+        sort(arr, 0, 4999);
+        endTime = System.currentTimeMillis();
+        System.out.println(startTime+" "+endTime);
+        System.out.println("Time required: "+ (endTime - startTime));
+    }
+}
+
+QUESTION 5:
+import java.util.*;
+
+public class KnapSackDP{
+    static int knapsack(int[] wt, int[] vals, int capacity){
+        int n = wt.length;  //number of elements
+        int[][] dp = new int[n+1][capacity+1];
+        for(int i=0; i <=n; i++){
+            for (int j = 0; j <= capacity; j++){
+                if(i == 0 || j == 0){
+                    dp[i][j] = 0;
+                }
+                else if(wt[i-1] <= j){
+                    dp[i][j] = Math.max(vals[i-1]+dp[i-1][j-wt[i-1]], dp[i-1][j]);
+                }
+                else{
+                    dp[i][j] = dp[i-1][j];
+                }
+            }
+        }
+        int result = dp[n][capacity];
+        int w = capacity;
+        for (int i = n; i>0 && result > 0; i--){
+            if(result != dp[i-1][w]){
+                System.out.println("include item: "+i+" with weight "+wt[i-1]+" and profit "+vals[i-1]);
+                result -= vals[i-1];
+                w-=wt[i-1];
+            }
+        }
+        return dp[n][capacity];
+    }
+
+    
+    public static void main(String[] args){
+        int[] wt = {2,4,5,9};
+        int[] vals = {10,10,12,18};
+        int m = 15;
+        System.out.println(knapsack(wt, vals, m));
+    }
+}
+
+QUESTION 6:
+import java.awt.datatransfer.SystemFlavorMap;
+import java.util.*;
+
+public class Solution{
+	static int N;
+	Solution(int n){
+		this.N = n;
+	}
+    static void printSolution(int[][] board){
+        //int n = board[0].length;
+        //System.out.println("n= "+N);
+        for(int i = 0; i <N; i++){
+            for (int j = 0; j <N; j++){
+            	//System.out.println(i+" "+j);
+                if(board[i][j] == 1){
+                    System.out.print("Q ");
+                }
+                else{
+                    System.out.print(". ");
+                }
+                
+            }
+            System.out.println();
+        }
+    }
+    
+    static boolean isSafe(int[][] board, int row, int col){
+        //int N = board.length;
+        int i, j;
+        for(i = 0; i < col; i++){
+            if(board[row][i] == 1){
+                return false;
+            }
+        }
+        
+        for(i = row, j = col; i>=0 && j>=0; i--, j--){
+            if(board[i][j] == 1){
+                return false;
+            }
+        }
+        
+        for(i = row, j = col; j>=0 && i < N; i++, j--){
+            if(board[i][j] == 1){
+                return false;
+            }
+        }
+        
+        return true;
+    }
+    
+    static boolean solveNQUtil(int[][] board, int col){
+        //int N = board.length;
+        if(col >= N){
+            return true;
+        }
+        for(int i =0; i<N; i++){
+            if(isSafe(board, i, col)){
+                board[i][col] = 1;
+                if(solveNQUtil(board, col+1) == true){
+                    return true;
+                }
+                board[i][col] = 0; //backtrack
+            }
+        }
+        return false;
+    }
+    boolean solveNQ(){
+        int[][] board = new int[N][N];
+        for (int i = 0; i <N; i++){
+            int[] row = new int[N];
+            for (int j = 0; j<N; j++){
+                row[j] = 0;
+            }
+            board[i] = row;
+        }
+        for(int[] row: board){
+            for (int ele: row){
+                System.out.print(ele+" ");
+            }
+            System.out.println();
+        }
+        //int[][] board = {{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0}};
+        if (solveNQUtil(board, 0) == false){
+            System.out.println("solution does not exist");
+            return false;
+        }
+        printSolution(board);
+        return true;
+    }
+    
+    public static void main(String[] args){
+    	Solution obj4 = new Solution(4);
+    	
+    	
+    	
+    	
+        long start_time = System.currentTimeMillis();
+        obj4.solveNQ();	//input =4
+        long end_time = System.currentTimeMillis();
+        System.out.println("Time reqiured for board size = 4: "+(end_time - start_time));
+        Solution obj5 = new Solution(5);
+        start_time = System.currentTimeMillis();
+        obj5.solveNQ();	//input = 5
+        end_time = System.currentTimeMillis();
+        System.out.println("Time reqiured for board size = 5: "+(end_time - start_time));
+        Solution obj6 = new Solution(6);
+        start_time = System.currentTimeMillis();
+        obj6.solveNQ();	//input = 6
+        end_time = System.currentTimeMillis();
+        System.out.println("Time reqiured for board size = 6: "+(end_time - start_time));
+        Solution obj7 = new Solution(7);
+        start_time = System.currentTimeMillis();
+        obj7.solveNQ();	//input = 7
+        end_time = System.currentTimeMillis();
+        System.out.println("Time reqiured for board size = 7: "+(end_time - start_time));
+        Solution obj8 = new Solution(8);
+        start_time = System.currentTimeMillis();
+        obj8.solveNQ();	//input = 8
+        end_time = System.currentTimeMillis();
+        System.out.println("Time reqiured for board size = 8: "+(end_time - start_time));
+
+    }
+}
+
+QUESTION 7:
+import java.util.Arrays;
+import java.util.Random;
+
+public class TSPGeneticAlgorithm {
+
+    private int[][] distanceMatrix;
+    private int populationSize;
+    private int generations;
+
+    public TSPGeneticAlgorithm(int[][] distanceMatrix, int populationSize, int generations) {
+        this.distanceMatrix = distanceMatrix;
+        this.populationSize = populationSize;
+        this.generations = generations;
+    }
+
+    // Representation of an individual (chromosome)
+    private class Individual {
+        int[] chromosome;
+        int fitness;
+
+        Individual(int[] chromosome) {
+            this.chromosome = chromosome;
+            calculateFitness();
+        }
+
+        void calculateFitness() {
+            int totalDistance = 0;
+            for (int i = 0; i < chromosome.length - 1; i++) {
+                totalDistance += distanceMatrix[chromosome[i]][chromosome[i + 1]];
+            }
+            totalDistance += distanceMatrix[chromosome[chromosome.length - 1]][chromosome[0]]; // Return to the starting city
+            fitness = totalDistance;
+        }
+    }
+
+    // Initialize a population of individuals
+    private Individual[] initializePopulation() {
+        Individual[] population = new Individual[populationSize];
+        for (int i = 0; i < populationSize; i++) {
+            int[] chromosome = generateRandomChromosome();
+            population[i] = new Individual(chromosome);
+        }
+        return population;
+    }
+
+    // Generate a random chromosome representing a route
+    private int[] generateRandomChromosome() {
+        int[] chromosome = new int[distanceMatrix.length];
+        for (int i = 0; i < chromosome.length; i++) {
+            chromosome[i] = i;
+        }
+        shuffleArray(chromosome);
+        return chromosome;
+    }
+
+    // Implement Fisher-Yates shuffle to shuffle an array
+    private void shuffleArray(int[] array) {
+        Random random = new Random();
+        for (int i = array.length - 1; i > 0; i--) {
+            int index = random.nextInt(i + 1);
+            int temp = array[index];
+            array[index] = array[i];
+            array[i] = temp;
+        }
+    }
+
+    // Select parents for crossover using tournament selection
+    private Individual selectParent(Individual[] population) {
+        Random random = new Random();
+        int tournamentSize = 5;
+        Individual best = null;
+        for (int i = 0; i < tournamentSize; i++) {
+            Individual candidate = population[random.nextInt(populationSize)];
+            if (best == null || candidate.fitness < best.fitness) {
+                best = candidate;
+            }
+        }
+        return best;
+    }
+
+    // Perform crossover to create a new individual
+    private Individual crossover(Individual parent1, Individual parent2) {
+        int[] childChromosome = new int[parent1.chromosome.length];
+        Arrays.fill(childChromosome, -1);
+
+        int start = (int) (Math.random() * parent1.chromosome.length);
+        int end = (int) (Math.random() * parent1.chromosome.length);
+
+        if (start > end) {
+            int temp = start;
+            start = end;
+            end = temp;
+        }
+
+        for (int i = start; i <= end; i++) {
+            childChromosome[i] = parent1.chromosome[i];
+        }
+
+        int currentIndex = 0;
+        for (int i = 0; i < childChromosome.length; i++) {
+            if (childChromosome[i] == -1) {
+                while (contains(childChromosome, parent2.chromosome[currentIndex])) {
+                    currentIndex = (currentIndex + 1) % childChromosome.length;
+                }
+                childChromosome[i] = parent2.chromosome[currentIndex];
+                currentIndex = (currentIndex + 1) % childChromosome.length;
+            }
+        }
+
+        return new Individual(childChromosome);
+    }
+
+    // Check if an array contains a specific value
+    private boolean contains(int[] array, int value) {
+        for (int i : array) {
+            if (i == value) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // Perform mutation on an individual
+    private void mutate(Individual individual) {
+        int index1 = (int) (Math.random() * individual.chromosome.length);
+        int index2 = (int) (Math.random() * individual.chromosome.length);
+
+        int temp = individual.chromosome[index1];
+        individual.chromosome[index1] = individual.chromosome[index2];
+        individual.chromosome[index2] = temp;
+
+        individual.calculateFitness();
+    }
+
+    // Evolve the population over generations
+    public Individual evolve() {
+        Individual[] population = initializePopulation();
+
+        for (int generation = 0; generation < generations; generation++) {
+            Individual[] newPopulation = new Individual[populationSize];
+
+            for (int i = 0; i < populationSize; i++) {
+                Individual parent1 = selectParent(population);
+                Individual parent2 = selectParent(population);
+
+                Individual child = crossover(parent1, parent2);
+
+                if (Math.random() < 0.05) { // Mutation probability
+                    mutate(child);
+                }
+
+                newPopulation[i] = child;
+            }
+
+            population = newPopulation;
+        }
+
+        // Find the best individual in the final population
+        Individual bestIndividual = population[0];
+        for (Individual individual : population) {
+            if (individual.fitness < bestIndividual.fitness) {
+                bestIndividual = individual;
+            }
+        }
+
+        return bestIndividual;
+    }
+
+    public static void main(String[] args) {
+        // Example usage
+        int[][] distanceMatrix = {
+                {0, 10, 15, 20},
+                {10, 0, 35, 25},
+                {15, 35, 0, 30},
+                {20, 25, 30, 0}
+        };
+        int populationSize = 50;
+        int generations = 1000;
+
+        TSPGeneticAlgorithm tspGA = new TSPGeneticAlgorithm(distanceMatrix, populationSize, generations);
+        TSPGeneticAlgorithm.Individual bestRoute = tspGA.evolve();
+
+        System.out.println("Best Route: " + Arrays.toString(bestRoute.chromosome));
+        System.out.println("Best Fitness: " + bestRoute.fitness);
+    }
+}
+
+QUESTION 12:
+public class MatrixMultiplication {
+
+    static class MatrixMultiplier extends Thread {
+        private final int row;
+        private final double[][] matrixA;
+        private final double[][] matrixB;
+        private final double[][] result;
+
+        public MatrixMultiplier(int row, double[][] matrixA, double[][] matrixB, double[][] result) {
+            this.row = row;
+            this.matrixA = matrixA;
+            this.matrixB = matrixB;
+            this.result = result;
+        }
+
+        @Override
+        public void run() {
+            for (int j = 0; j < matrixB[0].length; j++) {
+                for (int k = 0; k < matrixA[0].length; k++) {
+                    result[row][j] += matrixA[row][k] * matrixB[k][j];
+                }
+            }
+        }
+    }
+
+    public static double[][] multiplyMatrixMultithreaded(double[][] matrixA, double[][] matrixB) {
+        int rowsA = matrixA.length;
+        int colsB = matrixB[0].length;
+        double[][] result = new double[rowsA][colsB];
+
+        Thread[] threads = new Thread[rowsA];
+        for (int i = 0; i < rowsA; i++) {
+            threads[i] = new MatrixMultiplier(i, matrixA, matrixB, result);
+            threads[i].start();
+        }
+
+        try {
+            for (Thread thread : threads) {
+                thread.join();
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        return result;
+    }
+
+    public static double[][] multiplyMatrixSequential(double[][] matrixA, double[][] matrixB) {
+        int rowsA = matrixA.length;
+        int colsB = matrixB[0].length;
+        int common = matrixA[0].length;
+
+        double[][] result = new double[rowsA][colsB];
+
+        for (int i = 0; i < rowsA; i++) {
+            for (int j = 0; j < colsB; j++) {
+                for (int k = 0; k < common; k++) {
+                    result[i][j] += matrixA[i][k] * matrixB[k][j];
+                }
+            }
+        }
+
+        return result;
+    }
+
+    public static void main(String[] args) {
+        // Example matrices
+        int size = 500;
+        double[][] matrixA = new double[size][size];
+        double[][] matrixB = new double[size][size];
+
+        // Initialize matrices with random values
+        for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size; j++) {
+                matrixA[i][j] = Math.random();
+                matrixB[i][j] = Math.random();
+            }
+        }
+
+        // Multithreaded multiplication
+        long startTime = System.currentTimeMillis();
+        double[][] resultMultithreaded = multiplyMatrixMultithreaded(matrixA, matrixB);
+        long endTime = System.currentTimeMillis();
+        System.out.println("Multithreaded multiplication took " + (endTime - startTime) + " milliseconds");
+
+        // Sequential multiplication
+        startTime = System.currentTimeMillis();
+        double[][] resultSequential = multiplyMatrixSequential(matrixA, matrixB);
+        endTime = System.currentTimeMillis();
+        System.out.println("Sequential multiplication took " + (endTime - startTime) + " milliseconds");
+
+        // Check if the results are close
+        if (isClose(resultMultithreaded, resultSequential)) {
+            System.out.println("Results are close.");
+        } else {
+            System.out.println("Results differ.");
+        }
+    }
+
+    private static boolean isClose(double[][] matrixA, double[][] matrixB) {
+        // Check if the matrices are close within a tolerance
+        double tolerance = 1e-6;
+        for (int i = 0; i < matrixA.length; i++) {
+            for (int j = 0; j < matrixA[0].length; j++) {
+                if (Math.abs(matrixA[i][j] - matrixB[i][j]) > tolerance) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+}
+
+
